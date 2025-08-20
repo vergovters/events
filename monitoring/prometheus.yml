@@ -1,0 +1,47 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+rule_files:
+  # - "first_rules.yml"
+  # - "second_rules.yml"
+
+scrape_configs:
+  # Prometheus itself
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+  # Gateway service
+  - job_name: 'gateway'
+    static_configs:
+      - targets: ['gateway:3000']
+    metrics_path: '/metrics'
+    scrape_interval: 10s
+
+  # Facebook collector service
+  - job_name: 'fb-collector'
+    static_configs:
+      - targets: ['fb-collector:3001']
+    metrics_path: '/metrics'
+    scrape_interval: 10s
+
+  # TikTok collector service
+  - job_name: 'ttk-collector'
+    static_configs:
+      - targets: ['ttk-collector:3002']
+    metrics_path: '/metrics'
+    scrape_interval: 10s
+
+  # Reporter service
+  - job_name: 'reporter'
+    static_configs:
+      - targets: ['reporter:3003']
+    metrics_path: '/metrics'
+    scrape_interval: 10s
+
+
+
+
+
+

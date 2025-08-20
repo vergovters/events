@@ -1,0 +1,45 @@
+{
+  "name": "marketing-events-system",
+  "version": "0.1.0",
+  "description": "A microservices-based system for processing marketing events from various platforms",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "test:cov": "echo \"Error: no test specified\" && exit 1",
+    "build": "echo \"Building all services...\"",
+    "start": "docker-compose up -d",
+    "stop": "docker-compose down",
+    "logs": "docker-compose logs -f",
+    "clean": "docker-compose down -v && docker system prune -f"
+  },
+  "keywords": [
+    "marketing",
+    "events",
+    "microservices",
+    "nestjs",
+    "typescript",
+    "docker",
+    "nats",
+    "postgresql"
+  ],
+  "author": "Marketing Events Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/marketing-events.git"
+  },
+  "bugs": {
+    "url": "https://github.com/yourusername/marketing-events/issues"
+  },
+  "homepage": "https://github.com/yourusername/marketing-events#readme",
+  "devDependencies": {
+    "prisma": "^6.14.0"
+  },
+  "dependencies": {
+    "@prisma/client": "^6.14.0"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  }
+}

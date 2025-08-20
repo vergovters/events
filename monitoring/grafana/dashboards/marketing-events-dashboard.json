@@ -1,0 +1,258 @@
+{
+  "dashboard": {
+    "id": null,
+    "title": "Marketing Events Dashboard",
+    "tags": ["marketing", "events", "monitoring"],
+    "style": "dark",
+    "timezone": "browser",
+    "panels": [
+      {
+        "id": 1,
+        "title": "Gateway Metrics",
+        "type": "row",
+        "collapsed": false,
+        "panels": []
+      },
+      {
+        "id": 2,
+        "title": "Events Accepted",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "gateway_events_accepted_total",
+            "legendFormat": "{{source}} - {{event_type}}"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "displayMode": "list"
+            }
+          }
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 6,
+          "x": 0,
+          "y": 1
+        }
+      },
+      {
+        "id": 3,
+        "title": "Events Processed",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "gateway_events_processed_total",
+            "legendFormat": "{{source}} - {{event_type}}"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "displayMode": "list"
+            }
+          }
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 6,
+          "x": 6,
+          "y": 1
+        }
+      },
+      {
+        "id": 4,
+        "title": "Events Failed",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "gateway_events_failed_total",
+            "legendFormat": "{{source}} - {{event_type}}"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "displayMode": "list"
+            }
+          }
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 6,
+          "x": 12,
+          "y": 1
+        }
+      },
+      {
+        "id": 5,
+        "title": "Collectors Metrics",
+        "type": "row",
+        "collapsed": false,
+        "panels": []
+      },
+      {
+        "id": 6,
+        "title": "Collector Events Accepted (Rate per minute)",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "rate(collector_events_accepted_total[1m])",
+            "legendFormat": "{{collector_type}} - {{source}}"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            }
+          }
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 0,
+          "y": 10
+        }
+      },
+      {
+        "id": 7,
+        "title": "Collector Events Processed (Rate per minute)",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "rate(collector_events_processed_total[1m])",
+            "legendFormat": "{{collector_type}} - {{source}}"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            }
+          }
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 12,
+          "y": 10
+        }
+      },
+      {
+        "id": 8,
+        "title": "Collector Events Failed (Rate per minute)",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "rate(collector_events_failed_total[1m])",
+            "legendFormat": "{{collector_type}} - {{source}}"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            }
+          }
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 0,
+          "y": 18
+        }
+      },
+      {
+        "id": 9,
+        "title": "Reporter Metrics",
+        "type": "row",
+        "collapsed": false,
+        "panels": []
+      },
+      {
+        "id": 10,
+        "title": "Report Generation Latency",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "rate(reporter_request_duration_seconds_sum[5m]) / rate(reporter_request_duration_seconds_count[5m])",
+            "legendFormat": "{{report_type}}"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "unit": "s"
+          }
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 12,
+          "y": 18
+        }
+      },
+      {
+        "id": 11,
+        "title": "Report Requests Total",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "reporter_requests_total",
+            "legendFormat": "{{report_type}} - {{status}}"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "displayMode": "list"
+            }
+          }
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 0,
+          "y": 26
+        }
+      }
+    ],
+    "time": {
+      "from": "now-1h",
+      "to": "now"
+    },
+    "timepicker": {},
+    "templating": {
+      "list": []
+    },
+    "annotations": {
+      "list": []
+    },
+    "refresh": "5s",
+    "schemaVersion": 27,
+    "version": 0,
+    "links": []
+  }
+}
+
+
+
+
+
+

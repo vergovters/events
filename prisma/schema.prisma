@@ -1,0 +1,66 @@
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "linux-musl"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Event {
+  id          String   @id @default(cuid())
+  eventId     String   @unique
+  timestamp   DateTime
+  source      String   // "facebook" or "tiktok"
+  funnelStage String   // "top" or "bottom"
+  eventType   String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  processedAt DateTime?
+  correlationId String?
+
+  userData       Json
+  
+  userId      String
+  userName    String?
+  userAge     Int?
+  userGender  String?
+  userCountry String?
+  userCity    String?
+  userFollowers Int?
+
+  engagementData Json
+
+  @@index([source, timestamp])
+  @@index([funnelStage, timestamp])
+  @@index([eventType, timestamp])
+  @@index([userId, timestamp])
+  @@index([timestamp])
+  @@index([correlationId])
+}
+
+model ProcessedEvent {
+  id          String   @id @default(cuid())
+  eventId     String   @unique
+  processedAt DateTime @default(now())
+  status      String   // "success" or "failed"
+  error       String?
+  correlationId String?
+  
+  @@index([processedAt])
+  @@index([status])
+}
+
+model Metrics {
+  id          String   @id @default(cuid())
+  timestamp   DateTime
+  service     String   // "gateway", "collector", "reporter"
+  metric      String   // "accepted", "processed", "failed", "latency"
+  value       Float
+  labels      Json     // Additional labels like source, eventType, etc.
+  
+  @@index([timestamp, service, metric])
+  @@index([service, metric])
+}
+

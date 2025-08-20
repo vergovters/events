@@ -1,0 +1,197 @@
+services:
+  # Base services
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: marketing_events
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./prisma/migrations:/docker-entrypoint-initdb.d
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d marketing_events"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  nats:
+    image: nats:2.9-alpine
+    ports:
+      - "4222:4222"
+      - "8222:8222"
+    command: ["-js", "-m", "8222"]
+    healthcheck:
+      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:8222/healthz || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Publisher service (external)
+  publisher:
+    image: andriiuni/events
+    environment:
+      EVENT_ENDPOINT: http://gateway:3000/api/v1/webhook
+    depends_on:
+      gateway:
+        condition: service_healthy
+    restart: unless-stopped
+
+  # Gateway service
+  gateway:
+    build:
+      context: .
+      dockerfile: gateway/Dockerfile
+    environment:
+      NODE_ENV: development
+      PORT: 3000
+      NATS_URL: nats://nats:4222
+      NATS_NAME: gateway
+      NATS_MAX_RECONNECT_ATTEMPTS: 10
+      NATS_RECONNECT_TIME_WAIT: 1000
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/marketing_events
+      LOG_LEVEL: debug
+      CORRELATION_ID_HEADER: x-correlation-id
+      METRICS_PORT: 9090
+    ports:
+      - "3000:3000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      nats:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/api/v1/health/live"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  # Facebook collector service
+  fb-collector:
+    build:
+      context: .
+      dockerfile: collectors/Dockerfile
+    environment:
+      NODE_ENV: development
+      NATS_URL: nats://nats:4222
+      NATS_NAME: fb-collector
+      NATS_MAX_RECONNECT_ATTEMPTS: 10
+      NATS_RECONNECT_TIME_WAIT: 1000
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/marketing_events
+      COLLECTOR_TYPE: facebook
+      LOG_LEVEL: debug
+      CORRELATION_ID_HEADER: x-correlation-id
+      METRICS_PORT: 9090
+    depends_on:
+      postgres:
+        condition: service_healthy
+      nats:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3001/api/v1/health/live"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  # TikTok collector service
+  ttk-collector:
+    build:
+      context: .
+      dockerfile: collectors/Dockerfile
+    environment:
+      NODE_ENV: development
+      NATS_URL: nats://nats:4222
+      NATS_NAME: ttk-collector
+      NATS_MAX_RECONNECT_ATTEMPTS: 10
+      NATS_RECONNECT_TIME_WAIT: 1000
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/marketing_events
+      COLLECTOR_TYPE: tiktok
+      LOG_LEVEL: debug
+      CORRELATION_ID_HEADER: x-correlation-id
+      METRICS_PORT: 9090
+    depends_on:
+      postgres:
+        condition: service_healthy
+      nats:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3002/api/v1/health/live"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  # Reporter service
+  reporter:
+    build:
+      context: .
+      dockerfile: reporter/Dockerfile
+    environment:
+      NODE_ENV: development
+      PORT: 3003
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/marketing_events
+      LOG_LEVEL: debug
+      CORRELATION_ID_HEADER: x-correlation-id
+      METRICS_PORT: 9090
+    ports:
+      - "3003:3003"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3003/api/v1/health/live"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  # Monitoring services
+  prometheus:
+    image: prom/prometheus:latest
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=200h'
+      - '--web.enable-lifecycle'
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:9090/-/healthy"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - "3004:3000"
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: admin
+      GF_USERS_ALLOW_SIGN_UP: false
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./monitoring/grafana/dashboards:/etc/grafana/provisioning/dashboards
+      - ./monitoring/grafana/datasources:/etc/grafana/provisioning/datasources
+    depends_on:
+      prometheus:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:3000/api/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:
+  prometheus_data:
+  grafana_data:
+

@@ -1,0 +1,48 @@
+import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
+import { TerminusModule } from '@nestjs/terminus';
+import { ScheduleModule } from '@nestjs/schedule';
+import { HealthController } from './health.controller';
+import { MetricsService } from './services/metrics.service';
+import { EventCollectorService } from './services/event-collector.service';
+import { NatsService } from '@shared/nats.service';
+import { StructuredLogger } from '@shared/logger';
+import { PrismaModule } from './prisma/prisma.module';
+import { CollectorService } from './services/collector.service';
+import { EventProcessingService } from './services/event-processing.service';
+import { MessagingRepository } from './repositories/messaging.repository';
+import { EventRepository } from './repositories/event.repository';
+
+@Module({
+  imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: ['.env.local', '.env'],
+    }),
+    TerminusModule,
+    ScheduleModule.forRoot(),
+    PrismaModule,
+  ],
+  controllers: [HealthController],
+  providers: [
+    {
+      provide: NatsService,
+      useFactory: () => {
+        return new NatsService({
+          url: process.env.NATS_URL || 'nats://localhost:4222',
+          name: process.env.NATS_NAME || 'collector',
+          maxReconnectAttempts: parseInt(process.env.NATS_MAX_RECONNECT_ATTEMPTS || '10'),
+          reconnectTimeWait: parseInt(process.env.NATS_RECONNECT_TIME_WAIT || '1000'),
+        });
+      },
+    },
+    MetricsService,
+    StructuredLogger,
+    EventCollectorService,
+    CollectorService,
+    EventProcessingService,
+    MessagingRepository,
+    EventRepository,
+  ],
+})
+export class AppModule {}
