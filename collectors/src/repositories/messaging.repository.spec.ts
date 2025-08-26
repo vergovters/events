@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { MessagingRepository } from './messaging.repository';
-import { NatsService } from '../../../shared/nats.service';
+import { NatsService } from '@shared/nats.service';
 import { 
   createTestModule, 
   mockNatsService,

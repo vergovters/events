@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { StructuredLogger, LogMethod } from '../../../shared/logger';
-import { NatsService } from '../../../shared/nats.service';
+import { StructuredLogger, LogMethod } from '@shared/logger';
+import { NatsService } from '@shared/nats.service';
 
 @Injectable()
 export class MessagingRepository {

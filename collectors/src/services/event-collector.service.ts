@@ -1,7 +1,7 @@
 import { Injectable, OnModuleInit, OnModuleDestroy } from '@nestjs/common';
-import { NatsService } from '../../../shared/nats.service';
-import { StructuredLogger, LogMethod } from '../../../shared/logger';
-import { Event, FacebookEvent, TiktokEvent } from '../../../shared/types';
+import { NatsService } from '@shared/nats.service';
+import { StructuredLogger, LogMethod } from '@shared/logger';
+import { Event, FacebookEvent, TiktokEvent } from '@shared/types';
 import { PrismaService } from '../prisma/prisma.service';
 import { MetricsService } from './metrics.service';
 

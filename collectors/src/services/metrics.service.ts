@@ -1,6 +1,6 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { Registry, Counter, Histogram, Gauge } from 'prom-client';
-import { StructuredLogger } from '../../../shared/logger';
+import { StructuredLogger } from '@shared/logger';
 
 @Injectable()
 export class MetricsService implements OnModuleInit {

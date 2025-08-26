@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { EventCollectorService } from './event-collector.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { MetricsService } from './metrics.service';
-import { NatsService } from '../../../shared/nats.service';
+import { NatsService } from '@shared/nats.service';
 import { 
   createTestModule, 
   mockLogger, 

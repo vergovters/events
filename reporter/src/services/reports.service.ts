@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { ReportFilters, EventStatistics, RevenueData, DemographicsData } from '../../../shared/types';
-import { LogMethod } from '../../../shared/logger';
+import { ReportFilters, EventStatistics, RevenueData, DemographicsData } from '@shared/types';
+import { LogMethod } from '@shared/logger';
 
 @Injectable()
 export class ReportsService {

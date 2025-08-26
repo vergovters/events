@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { Event, FacebookEvent, TiktokEvent } from '../../../shared/types';
-import { StructuredLogger, LogMethod } from '../../../shared/logger';
+import { Event, FacebookEvent, TiktokEvent } from '@shared/types';
+import { StructuredLogger, LogMethod } from '@shared/logger';
 import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
